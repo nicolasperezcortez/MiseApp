@@ -130,6 +130,9 @@
     .auth-card h1 { font:700 var(--text-lg)/1 var(--font-display); text-align:center; }
     .auth-card > p.muted { text-align:center; }
     #auth-message { min-height:1.2em; text-align:center; }
+    .password-wrap { position:relative; }
+    .password-wrap .input { padding-right:2.75rem; }
+    .password-toggle { position:absolute; right:.35rem; top:50%; transform:translateY(-50%); width:34px; height:34px; display:grid; place-items:center; color:var(--color-text-muted); background:none; border:none; }
     @media (min-width: 760px) {
       .app-shell { max-width: 1180px; padding-bottom:2rem; }
       .hero, main { padding-inline:var(--space-6); }
@@ -153,7 +156,13 @@
       <h1>Mise App</h1>
       <p class="muted">Iniciá sesión con el email y contraseña de tu bar.</p>
       <div class="field"><label for="auth-email">Email</label><input id="auth-email" class="input" type="email" placeholder="tubar@email.com" /></div>
-      <div class="field"><label for="auth-password">Contraseña</label><input id="auth-password" class="input" type="password" placeholder="Mínimo 6 caracteres" /></div>
+      <div class="field">
+        <label for="auth-password">Contraseña</label>
+        <div class="password-wrap">
+          <input id="auth-password" class="input" type="password" placeholder="Mínimo 6 caracteres" />
+          <button type="button" class="password-toggle" data-toggle-for="auth-password" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
+        </div>
+      </div>
       <p id="auth-message" class="small faint"></p>
       <div class="actions" style="justify-content:center;">
         <button class="btn btn-primary" type="button" id="auth-signin">Iniciar sesión</button>
@@ -164,7 +173,13 @@
     <div class="auth-card" id="auth-recovery" hidden>
       <h1>Nueva contraseña</h1>
       <p class="muted">Elegí una contraseña nueva para tu cuenta.</p>
-      <div class="field"><label for="recovery-password">Nueva contraseña</label><input id="recovery-password" class="input" type="password" placeholder="Mínimo 6 caracteres" /></div>
+      <div class="field">
+        <label for="recovery-password">Nueva contraseña</label>
+        <div class="password-wrap">
+          <input id="recovery-password" class="input" type="password" placeholder="Mínimo 6 caracteres" />
+          <button type="button" class="password-toggle" data-toggle-for="recovery-password" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
+        </div>
+      </div>
       <p id="recovery-message" class="small faint"></p>
       <button class="btn btn-primary" type="button" id="recovery-submit">Guardar contraseña</button>
     </div>
@@ -540,6 +555,18 @@
       await sb.auth.signOut();
       location.reload();
     });
+
+    document.querySelectorAll('.password-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.toggleFor);
+        const showing = input.type === 'text';
+        input.type = showing ? 'password' : 'text';
+        btn.innerHTML = showing ? '<i data-lucide="eye"></i>' : '<i data-lucide="eye-off"></i>';
+        btn.setAttribute('aria-label', showing ? 'Mostrar contraseña' : 'Ocultar contraseña');
+        if (window.lucide) lucide.createIcons();
+      });
+    });
+    window.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
 
     function initApp() {
     const recipes = [
