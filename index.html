@@ -124,6 +124,7 @@
     .footer-note { padding:var(--space-6) var(--space-4) var(--space-10); color:var(--color-text-faint); font-size:var(--text-xs); text-align:center; }
     .auth-screen { min-height:100dvh; display:grid; place-items:center; padding:var(--space-4); }
     .auth-card { max-width:380px; width:100%; background:var(--color-surface); border:1px solid rgba(255,255,255,.08); border-radius:24px; padding:var(--space-6); box-shadow:var(--shadow-md); display:grid; gap:var(--space-4); }
+    .auth-card[hidden] { display:none; }
     .auth-card .logo { margin:0 auto; }
     .auth-card h1 { font:700 var(--text-lg)/1 var(--font-display); text-align:center; }
     .auth-card > p.muted { text-align:center; }
@@ -490,18 +491,22 @@
       initApp();
     }
 
-    document.getElementById('auth-signin').addEventListener('click', async () => {
+    const authSigninBtn = document.getElementById('auth-signin');
+    const authSignupBtn = document.getElementById('auth-signup');
+    authSigninBtn.addEventListener('click', async () => {
+      authSigninBtn.disabled = true; authSignupBtn.disabled = true;
       authMessage.textContent = 'Ingresando...';
       const { data, error } = await sb.auth.signInWithPassword({ email: authEmail.value.trim(), password: authPassword.value });
-      if (error) { authMessage.textContent = error.message; return; }
+      if (error) { authMessage.textContent = error.message; authSigninBtn.disabled = false; authSignupBtn.disabled = false; return; }
       enterApp(data.user.id);
     });
-    document.getElementById('auth-signup').addEventListener('click', async () => {
+    authSignupBtn.addEventListener('click', async () => {
+      authSigninBtn.disabled = true; authSignupBtn.disabled = true;
       authMessage.textContent = 'Creando cuenta...';
       const { data, error } = await sb.auth.signUp({ email: authEmail.value.trim(), password: authPassword.value });
-      if (error) { authMessage.textContent = error.message; return; }
+      if (error) { authMessage.textContent = error.message; authSigninBtn.disabled = false; authSignupBtn.disabled = false; return; }
       if (data.session) { enterApp(data.user.id); }
-      else { authMessage.textContent = 'Cuenta creada. Revisá tu email para confirmarla y después iniciá sesión.'; }
+      else { authMessage.textContent = 'Cuenta creada. Revisá tu email para confirmarla y después iniciá sesión.'; authSigninBtn.disabled = false; authSignupBtn.disabled = false; }
     });
     document.getElementById('auth-forgot').addEventListener('click', async () => {
       const email = authEmail.value.trim();
