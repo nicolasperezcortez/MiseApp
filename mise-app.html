@@ -392,6 +392,11 @@
             <div class="field"><label>Cristalería</label><input id="new-recipe-glass" class="input" placeholder="Ej.: Coupe" /></div>
             <div class="field"><label>Garnish</label><input id="new-recipe-garnish" class="input" placeholder="Ej.: Twist de pomelo" /></div>
             <div class="field"><label>Método</label><select id="new-recipe-method" class="select"><option>Shake</option><option>Stir</option><option>Build</option><option>Blend</option></select></div>
+            <div class="field"><label>Familia</label><input id="new-recipe-family" class="input" placeholder="Ej.: Sour Moderno" /></div>
+            <div class="field"><label>Dificultad</label><select id="new-recipe-difficulty" class="select"><option value="1">★☆☆☆☆</option><option value="2">★★☆☆☆</option><option value="3" selected>★★★☆☆</option><option value="4">★★★★☆</option><option value="5">★★★★★</option></select></div>
+            <div class="field"><label>ABV aprox. (%)</label><input id="new-recipe-abv" class="input" type="number" min="0" max="100" placeholder="Ej.: 20" /></div>
+            <div class="field"><label>Tiempo</label><input id="new-recipe-time" class="input" placeholder="Ej.: 2 min" /></div>
+            <div class="field" style="grid-column:1/-1;"><label>Historia</label><textarea id="new-recipe-history" class="textarea" placeholder="Breve reseña del cóctel"></textarea></div>
             <div class="field" style="grid-column:1/-1;"><label>Ingredientes</label><textarea id="new-recipe-ingredients" class="textarea" placeholder="Gin, 45&#10;Jugo de limón, 20&#10;Jarabe simple, 15"></textarea></div>
           </div>
           <button class="btn btn-primary" id="add-recipe" style="margin-top:1rem;">Guardar cóctel</button>
@@ -616,36 +621,76 @@
 
     function initApp() {
     const recipes = [
-      {name:'Pisco Sour', glass:'Old Fashioned', garnish:'Angostura bitters', method:'Shake', tags:['clásico','sudamérica'], ingredients:[['Pisco',60],['Jugo de limón',30],['Jarabe simple',20],['Clara',20]]},
-      {name:'Gimlet', glass:'Coupe', garnish:'Twist de limón', method:'Shake', tags:['clásico'], ingredients:[['Gin',60],['Jugo de lima',22.5],['Jarabe simple',22.5]]},
-      {name:'Daiquiri', glass:'Coupe', garnish:'Sin garnish o rueda de lima', method:'Shake', tags:['IBA'], ingredients:[['Ron blanco',60],['Jugo de lima',25],['Jarabe simple',15]]},
-      {name:'Gin Tonic', glass:'Copa balón', garnish:'Lima o botánicos', method:'Build', tags:['highball'], ingredients:[['Gin',50],['Agua tónica',150]]},
-      {name:'Mojito', glass:'Highball', garnish:'Menta y lima', method:'Build', tags:['IBA'], ingredients:[['Ron blanco',50],['Jugo de lima',25],['Jarabe simple',20],['Soda',60],['Menta',10]]},
-      {name:'Aperol Spritz', glass:'Copa de vino', garnish:'Rodaja de naranja', method:'Build', tags:['aperitivo'], ingredients:[['Aperol',90],['Espumante',60],['Soda',30]]},
-      {name:'Negroni', glass:'Old Fashioned', garnish:'Twist de naranja', method:'Stir', tags:['top seller'], ingredients:[['Gin',30],['Campari',30],['Vermouth rosso',30]]},
-      {name:'Sangría', glass:'Copa de vino', garnish:'Fruta fresca', method:'Build', tags:['batch'], ingredients:[['Vino tinto',120],['Brandy',20],['Licor de naranja',15],['Jugo de naranja',30],['Soda',30]]},
-      {name:'Manhattan', glass:'Coupe', garnish:'Cereza', method:'Stir', tags:['top seller'], ingredients:[['Whisky rye o bourbon',60],['Vermouth rosso',30],['Angostura',2]]},
-      {name:'Old Fashioned', glass:'Old Fashioned', garnish:'Piel de naranja', method:'Stir', tags:['top seller'], ingredients:[['Bourbon',60],['Jarabe simple',10],['Angostura',2]]},
-      {name:'Dry Martini', glass:'Martini', garnish:'Aceituna o twist', method:'Stir', tags:['top seller'], ingredients:[['Gin',60],['Vermouth dry',10]]},
-      {name:'Bramble', glass:'Old Fashioned', garnish:'Mora y limón', method:'Build', tags:['moderno'], ingredients:[['Gin',50],['Jugo de limón',25],['Jarabe simple',12.5],['Crème de mûre',15]]},
-      {name:'Cosmopolitan', glass:'Martini', garnish:'Twist de naranja', method:'Shake', tags:['top seller'], ingredients:[['Vodka cítrico',40],['Cointreau',15],['Jugo de lima',15],['Cranberry',30]]},
-      {name:'Espresso Martini', glass:'Coupe', garnish:'3 granos de café', method:'Shake', tags:['top seller'], ingredients:[['Vodka',40],['Licor de café',20],['Espresso',30],['Jarabe simple',10]]},
-      {name:'Piña Colada', glass:'Hurricane', garnish:'Piña y cereza', method:'Blend', tags:['tropical'], ingredients:[['Ron blanco',50],['Crema de coco',30],['Jugo de piña',90]]},
-      {name:'Caipiriña', glass:'Old Fashioned', garnish:'Gajos de lima', method:'Build', tags:['IBA'], ingredients:[['Cachaça',60],['Lima',30],['Azúcar',10]]},
-      {name:'Margarita', glass:'Coupe', garnish:'Sal en borde y lima', method:'Shake', tags:['top seller'], ingredients:[['Tequila',50],['Triple sec',20],['Jugo de lima',25]]},
-      {name:'Paloma', glass:'Highball', garnish:'Pomelo o lima', method:'Build', tags:['highball'], ingredients:[['Tequila',50],['Jugo de lima',15],['Soda pomelo',120]]},
-      {name:'Moscow Mule', glass:'Mug', garnish:'Menta y lima', method:'Build', tags:['highball'], ingredients:[['Vodka',50],['Jugo de lima',15],['Ginger beer',120]]},
-      {name:'Bee’s Knees', glass:'Coupe', garnish:'Twist de limón', method:'Shake', tags:['clásico'], ingredients:[['Gin',60],['Jugo de limón',22.5],['Miel diluida',22.5]]},
-      {name:'Penicillin', glass:'Old Fashioned', garnish:'Jengibre', method:'Shake', tags:['moderno'], ingredients:[['Blended Scotch',50],['Jugo de limón',22.5],['Jarabe miel-jengibre',22.5],['Islay float',7.5]]},
-      {name:'French 75', glass:'Flauta', garnish:'Twist de limón', method:'Build', tags:['champagne'], ingredients:[['Gin',30],['Jugo de limón',15],['Jarabe simple',15],['Espumante',60]]},
-      {name:'Gin Basil Smash', glass:'Old Fashioned', garnish:'Albahaca', method:'Shake', tags:['moderno'], ingredients:[['Gin',60],['Jugo de limón',25],['Jarabe simple',20],['Albahaca',12]]},
-      {name:'Tom Collins', glass:'Collins', garnish:'Rodaja de limón', method:'Build', tags:['clásico'], ingredients:[['Gin',45],['Jugo de limón',30],['Jarabe simple',15],['Soda',60]]},
-      {name:'Whisky Sour', glass:'Old Fashioned', garnish:'Angostura', method:'Shake', tags:['top seller'], ingredients:[['Bourbon',60],['Jugo de limón',30],['Jarabe simple',20],['Clara',20]]},
-      {name:'Hugo Spritz', glass:'Copa de vino', garnish:'Menta y lima', method:'Build', tags:['aperitivo'], ingredients:[['Licor flor de saúco',45],['Espumante',90],['Soda',30]]},
-      {name:'Tropical Gin', glass:'Highball', garnish:'Rodaja de pomelo o mango', method:'Build', tags:['venta alta'], ingredients:[['Gin',50],['Jugo tropical',90],['Tónica',90]]},
-      {name:'Clover Club', glass:'Coupe', garnish:'3 frambuesas', method:'Shake', tags:['clásico'], ingredients:[['Gin',45],['Jugo de limón',20],['Jarabe de frambuesa',15],['Clara',20]]},
-      {name:'Last Word', glass:'Coupe', garnish:'Sin garnish', method:'Shake', tags:['clásico'], ingredients:[['Gin',20],['Chartreuse verde',20],['Marraschino',20],['Jugo de lima',20]]},
-      {name:'Dark ‘n’ Stormy', glass:'Highball', garnish:'Rodaja de lima', method:'Build', tags:['tropical'], ingredients:[['Ron oscuro',50],['Ginger beer',120],['Jugo de lima',10]]}
+      {name:'Old Fashioned', glass:'Vaso Old Fashioned (Rocks)', garnish:'Twist de naranja', method:'Directo / Refrescado', history:'Nacido a comienzos del siglo XIX, es considerado uno de los primeros cócteles modernos.', difficulty:2, abv:30, time:'2 min', family:'Spirit Forward', ingredients:[['Bourbon',60],['Azúcar','1 cubo'],['Angostura Bitters','2-3 dashes']]},
+      {name:'Negroni', glass:'Vaso Old Fashioned (Rocks)', garnish:'Twist o rodaja de naranja', method:'Directo / Refrescado', history:'Creado en Florencia alrededor de 1919 para el Conde Camillo Negroni.', difficulty:1, abv:24, time:'1 min', family:'Spirit Forward / Aperitivo', ingredients:[['Gin',30],['Campari',30],['Vermouth Rosso',30]]},
+      {name:'Dry Martini', glass:'Copa Martini', garnish:'Twist de limón o aceituna', method:'Refrescado', history:'Surgió a finales del siglo XIX y es uno de los grandes clásicos de la coctelería.', difficulty:3, abv:30, time:'3 min', family:'Martini', ingredients:[['Gin',60],['Dry Vermouth',10]]},
+      {name:'Manhattan', glass:'Copa Coupé', garnish:'Cereza Luxardo', method:'Refrescado', history:'Nació en Nueva York hacia 1870 y es uno de los cócteles más influyentes de la historia.', difficulty:2, abv:28, time:'2 min', family:'Spirit Forward', ingredients:[['Rye Whiskey',60],['Vermouth Rosso',30],['Angostura Bitters','2 dashes']]},
+      {name:'Boulevardier', glass:'Vaso Old Fashioned', garnish:'Twist de naranja', method:'Refrescado', history:'Variante del Negroni creada en París por Erskine Gwynne durante los años 20.', difficulty:2, abv:27, time:'2 min', family:'Spirit Forward', ingredients:[['Bourbon',45],['Campari',30],['Vermouth Rosso',30]]},
+      {name:'Rob Roy', glass:'Copa Coupé', garnish:'Cereza Luxardo', method:'Refrescado', history:'Creado en 1894 en el Waldorf Astoria como versión escocesa del Manhattan.', difficulty:2, abv:28, time:'2 min', family:'Spirit Forward', ingredients:[['Scotch Whisky',60],['Vermouth Rosso',30],['Angostura Bitters','2 dashes']]},
+      {name:'Vieux Carré', glass:'Vaso Old Fashioned', garnish:'Twist de limón', method:'Refrescado', history:'Creado en el Hotel Monteleone de Nueva Orleans en la década de 1930.', difficulty:4, abv:30, time:'3 min', family:'Spirit Forward', ingredients:[['Rye Whiskey',30],['Cognac',30],['Vermouth Rosso',30],['Bénédictine',5],["Peychaud's Bitters",'2 dashes'],['Angostura Bitters','2 dashes']]},
+      {name:'Sazerac', glass:'Vaso Old Fashioned', garnish:'Twist de limón', method:'Refrescado / Enjuague', history:'Considerado por muchos el primer cóctel de Estados Unidos, originario de Nueva Orleans.', difficulty:4, abv:34, time:'3 min', family:'Spirit Forward', ingredients:[['Rye Whiskey',60],['Absenta (enjuague)',5],['Syrup simple',5],["Peychaud's Bitters",'3 dashes']]},
+      {name:'Martinez', glass:'Copa Coupé', garnish:'Twist de limón', method:'Refrescado', history:'Considerado el precursor del Dry Martini, surgido hacia finales del siglo XIX.', difficulty:3, abv:27, time:'3 min', family:'Martini', ingredients:[['Old Tom Gin',45],['Vermouth Rosso',45],['Maraschino',5],['Orange Bitters','2 dashes']]},
+      {name:'Hanky Panky', glass:'Copa Coupé', garnish:'Twist de naranja', method:'Refrescado', history:'Creado por Ada Coleman en el Savoy Hotel de Londres para el actor Sir Charles Hawtrey.', difficulty:3, abv:27, time:'2 min', family:'Martini', ingredients:[['Gin',45],['Vermouth Rosso',45],['Fernet Branca',7.5]]},
+      {name:'Whiskey Sour', glass:'Vaso Old Fashioned', garnish:'Media rodaja de naranja y cereza', method:'Batido', history:'Clásico estadounidense del siglo XIX.', difficulty:2, abv:18, time:'2 min', family:'Sour', ingredients:[['Bourbon',60],['Jugo de limón',30],['Syrup simple',22.5],['Clara de huevo','opcional']]},
+      {name:'Daiquiri', glass:'Copa Coupé', garnish:'Twist de lima', method:'Batido', history:'Creado en Cuba a finales del siglo XIX.', difficulty:2, abv:20, time:'2 min', family:'Sour', ingredients:[['Ron Blanco',60],['Jugo de lima',22.5],['Syrup simple',22.5]]},
+      {name:'Margarita', glass:'Copa Margarita / Coupé', garnish:'Borde de sal y rueda de lima', method:'Batido', history:'Uno de los cócteles mexicanos más famosos del mundo.', difficulty:2, abv:21, time:'2 min', family:'Sour', ingredients:[['Tequila Blanco',60],['Triple Sec',22.5],['Jugo de lima',30]]},
+      {name:'Sidecar', glass:'Copa Coupé', garnish:'Twist de naranja', method:'Batido', history:'Popularizado en París y Londres tras la Primera Guerra Mundial.', difficulty:3, abv:24, time:'2 min', family:'Sour', ingredients:[['Cognac',50],['Triple Sec',20],['Jugo de limón',20]]},
+      {name:'White Lady', glass:'Copa Coupé', garnish:'Twist de limón', method:'Batido', history:'Creado por Harry MacElhone en los años 20.', difficulty:3, abv:23, time:'2 min', family:'Sour', ingredients:[['Gin',40],['Triple Sec',30],['Jugo de limón',20]]},
+      {name:'Pisco Sour', glass:'Copa Sour', garnish:'Gotas de Angostura Bitters', method:'Batido', history:'Emblema del pisco, popularizado en Perú durante los años 20.', difficulty:3, abv:19, time:'3 min', family:'Sour', ingredients:[['Pisco',60],['Jugo de limón',30],['Syrup simple',20],['Clara de huevo','1']]},
+      {name:'Clover Club', glass:'Copa Coupé', garnish:'Frambuesas', method:'Batido', history:'Nació en Filadelfia antes de la Ley Seca.', difficulty:4, abv:18, time:'3 min', family:'Sour', ingredients:[['Gin',45],['Jugo de limón',22.5],['Syrup de frambuesa',22.5],['Clara de huevo','1']]},
+      {name:"Bee's Knees", glass:'Copa Coupé', garnish:'Twist de limón', method:'Batido', history:'Surgió durante la Ley Seca para suavizar ginebras de baja calidad.', difficulty:2, abv:19, time:'2 min', family:'Sour', ingredients:[['Gin',60],['Jugo de limón',22.5],['Syrup de miel',22.5]]},
+      {name:"Tommy's Margarita", glass:'Vaso Old Fashioned', garnish:'Rueda de lima', method:'Batido', history:"Creada en Tommy's Mexican Restaurant (San Francisco) en los 90.", difficulty:2, abv:20, time:'2 min', family:'Sour', ingredients:[['Tequila Blanco',60],['Jugo de lima',30],['Syrup de agave',15]]},
+      {name:'Mojito', glass:'Vaso Highball', garnish:'Menta y rueda de lima', method:'Batido suave / Directo', history:'Clásico cubano popularizado por La Bodeguita del Medio.', difficulty:2, abv:12, time:'3 min', family:'Highball', ingredients:[['Ron Blanco',60],['Jugo de lima',22.5],['Syrup simple',22.5],['Soda','dash'],['Menta','al gusto']]},
+      {name:'Tom Collins', glass:'Vaso Collins', garnish:'Rodaja de limón y cereza', method:'Batido / Completar', history:'Clásico londinense del siglo XIX.', difficulty:2, abv:12, time:'2 min', family:'Collins', ingredients:[['Gin',60],['Jugo de limón',30],['Syrup simple',15],['Soda','completar']]},
+      {name:'Gin Fizz', glass:'Vaso Highball', garnish:'Rodaja de limón', method:'Batido / Completar', history:'Variante del Sour creada en Nueva Orleans.', difficulty:3, abv:11, time:'2 min', family:'Fizz', ingredients:[['Gin',45],['Jugo de limón',30],['Syrup simple',15],['Soda','completar']]},
+      {name:'Paloma', glass:'Vaso Highball', garnish:'Gajo de pomelo', method:'Directo', history:'Uno de los tragos más populares de México.', difficulty:1, abv:9, time:'1 min', family:'Highball', ingredients:[['Tequila Blanco',60],['Jugo de lima',15],['Soda de pomelo',100]]},
+      {name:'Moscow Mule', glass:'Mug de cobre', garnish:'Gajo de lima', method:'Directo', history:'Creado en Estados Unidos en los años 40 para impulsar el vodka.', difficulty:1, abv:11, time:'1 min', family:'Mule', ingredients:[['Vodka',60],['Jugo de lima',15],['Ginger Beer',120]]},
+      {name:"Dark 'n' Stormy", glass:'Vaso Highball', garnish:'Gajo de lima', method:'Directo', history:'Originario de Bermudas con ron Gosling\'s.', difficulty:1, abv:12, time:'1 min', family:'Highball', ingredients:[['Ron Oscuro',60],['Ginger Beer',120],['Jugo de lima',15]]},
+      {name:"Horse's Neck", glass:'Vaso Highball', garnish:'Twist largo de limón', method:'Directo', history:'Nació como trago sin alcohol a finales del siglo XIX; luego se popularizó con brandy o bourbon.', difficulty:1, abv:10, time:'1 min', family:'Highball', ingredients:[['Bourbon o Brandy',60],['Ginger Ale',120],['Angostura Bitters','2 dashes']]},
+      {name:'Cuba Libre', glass:'Vaso Highball', garnish:'Gajo de lima', method:'Directo', history:'Creado en Cuba tras la Guerra Hispano-Estadounidense.', difficulty:1, abv:11, time:'1 min', family:'Highball', ingredients:[['Ron Blanco',60],['Jugo de lima',15],['Cola',120]]},
+      {name:'Mai Tai', glass:'Vaso Old Fashioned', garnish:'Menta y lima exprimida', method:'Batido', history:'Creado por Trader Vic en 1944, es uno de los pilares del tiki.', difficulty:3, abv:20, time:'3 min', family:'Tiki', ingredients:[['Ron Añejo',30],['Ron Blanco',30],['Curaçao',15],['Orgeat',15],['Jugo de lima',30]]},
+      {name:'Piña Colada', glass:'Hurricane', garnish:'Piña y cereza', method:'Batido en licuadora', history:'Creada en Puerto Rico en la década de 1950.', difficulty:2, abv:13, time:'3 min', family:'Tropical', ingredients:[['Ron Blanco',30],['Crema de coco',30],['Jugo de piña',90]]},
+      {name:'Zombie', glass:'Vaso Hurricane', garnish:'Menta', method:'Batido', history:'Donn Beach la creó en los años 30; es uno de los tiki más potentes.', difficulty:5, abv:24, time:'4 min', family:'Tiki', ingredients:[['Ron Blanco',30],['Ron Dorado',30],['Ron Overproof',30],['Falernum',15],['Jugo de lima',20],['Jugo de piña',20],['Jugo de pomelo',20],['Granadina',10],['Angostura Bitters','1 dash']]},
+      {name:'Painkiller', glass:'Vaso Hurricane', garnish:'Nuez moscada y piña', method:'Batido', history:'Nació en las Islas Vírgenes Británicas durante los años 70.', difficulty:2, abv:14, time:'3 min', family:'Tropical', ingredients:[['Ron Oscuro',60],['Jugo de piña',90],['Jugo de naranja',30],['Crema de coco',30]]},
+      {name:'Jungle Bird', glass:'Vaso Old Fashioned', garnish:'Piña', method:'Batido', history:'Creado en Kuala Lumpur en 1978; hoy es un clásico moderno.', difficulty:3, abv:17, time:'3 min', family:'Tropical', ingredients:[['Ron Oscuro',45],['Campari',22.5],['Jugo de piña',45],['Jugo de lima',15],['Syrup simple',15]]},
+      {name:'Singapore Sling', glass:'Vaso Sling', garnish:'Cereza y piña', method:'Batido / Completar', history:'Creado en el Raffles Hotel de Singapur en 1915.', difficulty:4, abv:16, time:'4 min', family:'Sling', ingredients:[['Gin',30],['Cherry Liqueur',15],['Bénédictine',7.5],['Cointreau',7.5],['Jugo de piña',120],['Jugo de lima',15],['Granadina',10],['Angostura Bitters','1 dash']]},
+      {name:'Hurricane', glass:'Vaso Hurricane', garnish:'Naranja y cereza', method:'Batido', history:"Creado en Pat O'Brien's, Nueva Orleans, en los años 40.", difficulty:3, abv:17, time:'3 min', family:'Tropical', ingredients:[['Ron Blanco',30],['Ron Oscuro',30],['Jugo de maracuyá',60],['Jugo de limón',20],['Syrup simple',20]]},
+      {name:"Planter's Punch", glass:'Vaso Highball', garnish:'Menta', method:'Batido', history:'Receta clásica caribeña con múltiples versiones desde el siglo XIX.', difficulty:3, abv:15, time:'3 min', family:'Punch', ingredients:[['Ron Oscuro',60],['Jugo de lima',30],['Syrup simple',20],['Angostura Bitters','3 dashes']]},
+      {name:'Aperol Spritz', glass:'Copa de vino', garnish:'Rodaja de naranja', method:'Directo', history:'Popularizado en el norte de Italia desde mediados del siglo XX.', difficulty:1, abv:8, time:'1 min', family:'Spritz', ingredients:[['Aperol',60],['Prosecco',90],['Soda',30]]},
+      {name:'Americano', glass:'Vaso Old Fashioned', garnish:'Twist de naranja', method:'Directo', history:'Predecesor del Negroni, muy popular a principios del siglo XX.', difficulty:1, abv:10, time:'1 min', family:'Aperitivo', ingredients:[['Campari',30],['Vermouth Rosso',30],['Soda',60]]},
+      {name:'Paper Plane', glass:'Copa Coupé', garnish:'Twist de limón', method:'Batido', history:'Creado por Sam Ross en 2007; uno de los clásicos modernos más influyentes.', difficulty:3, abv:21, time:'2 min', family:'Sour Moderno', ingredients:[['Bourbon',22.5],['Aperol',22.5],['Amaro Nonino',22.5],['Jugo de limón',22.5]]},
+      {name:'Naked & Famous', glass:'Copa Coupé', garnish:'Twist de lima', method:'Batido', history:'Creado por Joaquín Simó en Nueva York en 2011.', difficulty:3, abv:20, time:'2 min', family:'Sour Moderno', ingredients:[['Mezcal',22.5],['Aperol',22.5],['Yellow Chartreuse',22.5],['Jugo de lima',22.5]]},
+      {name:'French 75', glass:'Copa Flauta', garnish:'Twist de limón', method:'Batido / Completar con espumante', history:'Creado durante la Primera Guerra Mundial; su nombre hace referencia al cañón francés de 75 mm.', difficulty:3, abv:14, time:'3 min', family:'Sparkling', ingredients:[['Gin',30],['Jugo de limón',15],['Syrup simple',15],['Champagne',60]]},
+      {name:'Bellini', glass:'Copa Flauta', garnish:'Sin garnish o gajo de durazno', method:'Directo', history:"Creado por Giuseppe Cipriani en el Harry's Bar de Venecia en 1948.", difficulty:1, abv:8, time:'1 min', family:'Sparkling', ingredients:[['Puré de durazno',30],['Prosecco',90]]},
+      {name:'Mimosa', glass:'Copa Flauta', garnish:'Rodaja de naranja', method:'Directo', history:'Clásico brunch originado en París durante la década de 1920.', difficulty:1, abv:10, time:'1 min', family:'Sparkling', ingredients:[['Champagne',75],['Jugo de naranja',75]]},
+      {name:'Kir Royale', glass:'Copa Flauta', garnish:'Frambuesa (opcional)', method:'Directo', history:'Variante elegante del Kir francés, reemplazando vino blanco por Champagne.', difficulty:1, abv:11, time:'1 min', family:'Sparkling', ingredients:[['Crème de Cassis',15],['Champagne',90]]},
+      {name:'Espresso Martini', glass:'Copa Martini', garnish:'Tres granos de café', method:'Batido', history:'Creado por Dick Bradsell en Londres durante los años 80.', difficulty:3, abv:20, time:'3 min', family:'Contemporary', ingredients:[['Vodka',60],['Licor de café',30],['Espresso',30],['Syrup simple',15]]},
+      {name:'Irish Coffee', glass:'Copa Irish Coffee', garnish:'Crema ligeramente batida', method:'Directo', history:'Creado por Joe Sheridan en Irlanda durante los años 40.', difficulty:2, abv:12, time:'4 min', family:'Hot Cocktail', ingredients:[['Whiskey Irlandés',45],['Café caliente',90],['Azúcar',10],['Crema',30]]},
+      {name:'Brandy Alexander', glass:'Copa Coupé', garnish:'Nuez moscada rallada', method:'Batido', history:'Popularizado a comienzos del siglo XX como digestivo.', difficulty:2, abv:18, time:'2 min', family:'After Dinner', ingredients:[['Brandy',30],['Crème de Cacao',30],['Crema',30]]},
+      {name:'Rusty Nail', glass:'Vaso Old Fashioned', garnish:'Twist de limón', method:'Directo / Refrescado', history:'Popularizado en los años 60 como combinación de Scotch y Drambuie.', difficulty:1, abv:28, time:'1 min', family:'Spirit Forward', ingredients:[['Scotch Whisky',45],['Drambuie',30]]},
+      {name:'Godfather', glass:'Vaso Old Fashioned', garnish:'Sin garnish', method:'Directo / Refrescado', history:'Surgió en los años 70 y se hizo famoso tras la película del mismo nombre.', difficulty:1, abv:29, time:'1 min', family:'Spirit Forward', ingredients:[['Scotch Whisky',45],['Amaretto',30]]},
+      {name:'Black Russian', glass:'Vaso Old Fashioned', garnish:'Sin garnish', method:'Directo / Refrescado', history:'Creado en Bruselas en 1949 por Gustave Tops.', difficulty:1, abv:25, time:'1 min', family:'After Dinner', ingredients:[['Vodka',60],['Licor de café',30]]},
+      {name:'White Russian', glass:'Vaso Old Fashioned', garnish:'Sin garnish', method:'Directo / Refrescado', history:'Variante del Black Russian que incorpora crema.', difficulty:1, abv:18, time:'1 min', family:'After Dinner', ingredients:[['Vodka',60],['Licor de café',30],['Crema',30]]},
+      {name:'Penicillin', glass:'Vaso Old Fashioned', garnish:'Jengibre confitado', method:'Batido', history:'Creado por Sam Ross en Nueva York en 2005; uno de los grandes clásicos modernos.', difficulty:4, abv:19, time:'3 min', family:'Contemporary Sour', ingredients:[['Scotch Blended',60],['Whisky Islay',7.5],['Jugo de limón',22.5],['Syrup de miel-jengibre',22.5]]},
+      {name:'Cosmopolitan', glass:'Copa Martini', garnish:'Twist de naranja', method:'Batido', history:'Popularizado mundialmente durante los años 90 gracias a Sex and the City.', difficulty:2, abv:19, time:'2 min', family:'Contemporary', ingredients:[['Vodka Citron',40],['Cointreau',15],['Jugo de lima',15],['Jugo de arándano',30]]},
+      {name:'Last Word', glass:'Copa Coupé', garnish:'Cereza Luxardo', method:'Batido', history:'Creado en el Detroit Athletic Club antes de la Ley Seca y redescubierto en los 2000.', difficulty:3, abv:21, time:'2 min', family:'Equal Parts', ingredients:[['Gin',22.5],['Green Chartreuse',22.5],['Maraschino',22.5],['Jugo de lima',22.5]]},
+      {name:'Caipirinha', glass:'Vaso Old Fashioned', garnish:'Gajos de lima', method:'Directo / Machacado', history:'Cóctel nacional de Brasil, elaborado con cachaça.', difficulty:2, abv:22, time:'2 min', family:'Caipira', ingredients:[['Cachaça',60],['Lima','½ unidad en gajos'],['Azúcar','2 cucharaditas']]},
+      {name:'El Presidente', glass:'Copa Coupé', garnish:'Twist de naranja', method:'Refrescado', history:'Clásico cubano de principios del siglo XX, dedicado al presidente Mario García Menocal.', difficulty:3, abv:24, time:'2 min', family:'Spirit Forward', ingredients:[['Ron Blanco',45],['Vermouth Blanco',22.5],['Curaçao',15],['Granadina',5]]},
+      {name:'Aviation', glass:'Copa Coupé', garnish:'Cereza Luxardo', method:'Batido', history:'Creado por Hugo Ensslin en Nueva York antes de la Ley Seca.', difficulty:3, abv:21, time:'2 min', family:'Sour', ingredients:[['Gin',45],['Maraschino',15],['Crème de Violette',7.5],['Jugo de limón',22.5]]},
+      {name:'Corpse Reviver #2', glass:'Copa Coupé', garnish:'Twist de naranja', method:'Batido', history:'Publicado por Harry Craddock en The Savoy Cocktail Book (1930).', difficulty:4, abv:22, time:'2 min', family:'Corpse Reviver', ingredients:[['Gin',22.5],['Cointreau',22.5],['Lillet Blanc',22.5],['Jugo de limón',22.5],['Absenta','enjuague']]},
+      {name:'Blood & Sand', glass:'Copa Coupé', garnish:'Twist de naranja', method:'Batido', history:'Inspirado en la película del mismo nombre estrenada en 1922.', difficulty:3, abv:19, time:'2 min', family:'Equal Parts', ingredients:[['Scotch Whisky',22.5],['Cherry Heering',22.5],['Vermouth Rosso',22.5],['Jugo de naranja',22.5]]},
+      {name:'Mint Julep', glass:'Vaso Julep / Vaso metálico', garnish:'Bouquet de menta', method:'Directo / Machacado', history:'Clásico del sur de Estados Unidos y bebida oficial del Kentucky Derby.', difficulty:3, abv:25, time:'3 min', family:'Julep', ingredients:[['Bourbon',60],['Syrup simple',10],['Menta','10-12 hojas']]},
+      {name:'Bobby Burns', glass:'Copa Coupé', garnish:'Twist de limón', method:'Refrescado', history:'Clásico escocés nombrado en honor al poeta Robert Burns.', difficulty:3, abv:27, time:'2 min', family:'Spirit Forward', ingredients:[['Scotch Whisky',60],['Vermouth Rosso',25],['Bénédictine',10]]},
+      {name:'Ramos Gin Fizz', glass:'Vaso Highball', garnish:'Sin garnish', method:'Batido largo / Completar', history:'Creado por Henry C. Ramos en Nueva Orleans en 1888.', difficulty:5, abv:18, time:'6 min', family:'Fizz', ingredients:[['Gin',45],['Jugo de limón',15],['Jugo de lima',15],['Syrup simple',15],['Crema',30],['Clara de huevo','1'],['Agua de azahar','3 gotas'],['Soda','completar']]},
+      {name:'Basil Smash', glass:'Vaso Old Fashioned', garnish:'Hoja de albahaca', method:'Batido', history:'Variante moderna creada por Jörg Meyer; popular en bares contemporáneos.', difficulty:3, abv:17, time:'3 min', family:'Smash', ingredients:[['Gin',60],['Jugo de limón',30],['Syrup simple',20],['Albahaca','10-12 hojas']]},
+      {name:'Bramble', glass:'Vaso Old Fashioned', garnish:'Mora y media luna de limón', method:'Batido / Completar', history:'Creado por Dick Bradsell en Londres durante los años 80.', difficulty:3, abv:17, time:'3 min', family:'Bramble', ingredients:[['Gin',60],['Jugo de limón',22.5],['Syrup simple',7.5],['Crème de Mûre',15]]},
+      {name:'French Martini', glass:'Copa Martini', garnish:'Twist de limón', method:'Batido', history:'Creado en Nueva York durante los años 80 y popularizado en los 90.', difficulty:2, abv:17, time:'2 min', family:'Martini Moderno', ingredients:[['Vodka',45],['Chambord',15],['Jugo de piña',45]]},
+      {name:'Lynchburg Lemonade', glass:'Vaso Collins', garnish:'Rodaja de limón', method:'Batido / Completar', history:"Popularizado en Tennessee utilizando Jack Daniel's.", difficulty:2, abv:12, time:'2 min', family:'Collins', ingredients:[['Tennessee Whiskey',45],['Triple Sec',15],['Jugo de limón',25],['Lemon-Lime Soda',90]]},
+      {name:'Sex on the Beach', glass:'Vaso Highball', garnish:'Naranja y cereza', method:'Batido / Completar', history:'Creado en Florida en la década de 1980.', difficulty:2, abv:11, time:'2 min', family:'Tropical', ingredients:[['Vodka',40],['Licor de durazno',20],['Jugo de naranja',40],['Jugo de arándano',40]]},
+      {name:'Long Island Iced Tea', glass:'Vaso Collins', garnish:'Gajo de limón', method:'Batido / Completar', history:'Creado en Estados Unidos en los años 70; famoso por su alta graduación alcohólica.', difficulty:4, abv:22, time:'3 min', family:'Long Drink', ingredients:[['Vodka',15],['Gin',15],['Ron Blanco',15],['Tequila Blanco',15],['Triple Sec',15],['Jugo de limón',25],['Syrup simple',20],['Cola',30]]},
+      {name:'Between the Sheets', glass:'Copa Coupé', garnish:'Twist de naranja', method:'Batido', history:'Variante del Sidecar creada en París durante la década de 1930.', difficulty:3, abv:24, time:'2 min', family:'Sour', ingredients:[['Ron Blanco',30],['Cognac',30],['Triple Sec',30],['Jugo de limón',20]]},
+      {name:'Caipiroska', glass:'Vaso Old Fashioned', garnish:'Gajos de lima', method:'Directo / Machacado', history:'Adaptación de la Caipirinha que reemplaza la cachaça por vodka.', difficulty:2, abv:20, time:'2 min', family:'Caipira', ingredients:[['Vodka',60],['Lima','½ unidad en gajos'],['Azúcar','2 cucharaditas']]},
+      {name:"Queen's Park Swizzle", glass:'Vaso Highball', garnish:'Bouquet de menta y Angostura Bitters', method:'Swizzle', history:"Originario del Queen's Park Hotel de Trinidad y Tobago, es uno de los grandes clásicos del Caribe.", difficulty:3, abv:15, time:'3 min', family:'Swizzle', ingredients:[['Ron Añejo',60],['Jugo de lima',25],['Syrup simple',20],['Menta','8-10 hojas'],['Angostura Bitters','3 dashes']]}
     ];
 
     const defaultChecklists = {
@@ -1120,10 +1165,15 @@
     });
 
     function formatAmount(ml, unit) {
+      if (typeof ml !== 'number') return ml;
       if (unit === 'ml' || unit === 'cc') return `${Number(ml % 1 === 0 ? ml : ml.toFixed(1))} ${unit}`;
       if (unit === 'cl') return `${(ml / 10).toFixed(1)} cl`;
       if (unit === 'oz') return `${(ml / 29.57).toFixed(2)} oz`;
       return `${ml} ml`;
+    }
+    function starsFor(n) {
+      const filled = Math.max(0, Math.min(5, Number(n) || 0));
+      return '★'.repeat(filled) + '☆'.repeat(5 - filled);
     }
     function renderRecipes() {
       const q = document.getElementById('recipe-search').value.toLowerCase().trim();
@@ -1137,14 +1187,18 @@
           <div class="list-head">
             <div>
               <h4>${r.name}</h4>
-              <div class="pill-row" style="margin-top:.45rem">${r.custom ? '<span class="pill is-on">propio</span>' : ''}${r.tags.map(t => `<span class="pill">${t}</span>`).join('')}</div>
+              <div class="pill-row" style="margin-top:.45rem">${r.custom ? '<span class="pill is-on">propio</span>' : ''}${r.family ? `<span class="pill">${r.family}</span>` : ''}</div>
             </div>
             ${r.custom ? `<button class="icon-btn" type="button" data-remove-recipe="${idx}" aria-label="Eliminar cóctel" style="width:36px; height:36px;"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>` : ''}
           </div>
+          ${r.history ? `<p class="muted small">${r.history}</p>` : ''}
           <div class="recipe-meta">
             <div class="meta-box"><span>Cristalería</span><strong>${r.glass}</strong></div>
             <div class="meta-box"><span>Garnish</span><strong>${r.garnish}</strong></div>
             <div class="meta-box" style="grid-column:1/-1"><span>Método</span><strong>${r.method}</strong></div>
+            <div class="meta-box"><span>Dificultad</span><strong>${starsFor(r.difficulty)}</strong></div>
+            <div class="meta-box"><span>ABV aprox.</span><strong>${r.abv != null ? r.abv + '%' : '—'}</strong></div>
+            <div class="meta-box"><span>Tiempo</span><strong>${r.time || '—'}</strong></div>
           </div>
           <div>
             <p class="faint small" style="margin-bottom:.7rem">Ingredientes</p>
@@ -1191,6 +1245,12 @@
       const glass = document.getElementById('new-recipe-glass').value.trim() || 'Sin especificar';
       const garnish = document.getElementById('new-recipe-garnish').value.trim() || 'Sin garnish';
       const method = document.getElementById('new-recipe-method').value;
+      const family = document.getElementById('new-recipe-family').value.trim();
+      const difficulty = Number(document.getElementById('new-recipe-difficulty').value);
+      const abvRaw = document.getElementById('new-recipe-abv').value;
+      const abv = abvRaw === '' ? null : Number(abvRaw);
+      const time = document.getElementById('new-recipe-time').value.trim();
+      const history = document.getElementById('new-recipe-history').value.trim();
       const ingredientsRaw = document.getElementById('new-recipe-ingredients').value;
       if (!name) return;
       const ingredients = ingredientsRaw.split('\n').map(line => {
@@ -1198,9 +1258,9 @@
         const ml = Number(parts[1]);
         return parts[0] && parts[0].trim() && !isNaN(ml) ? [parts[0].trim(), ml] : null;
       }).filter(Boolean);
-      customRecipes.push({name, glass, garnish, method, tags:[], ingredients});
+      customRecipes.push({name, glass, garnish, method, family, difficulty, abv, time, history, ingredients});
       save('custom-recipes', customRecipes);
-      ['new-recipe-name','new-recipe-glass','new-recipe-garnish','new-recipe-ingredients'].forEach(id => document.getElementById(id).value = '');
+      ['new-recipe-name','new-recipe-glass','new-recipe-garnish','new-recipe-family','new-recipe-abv','new-recipe-time','new-recipe-history','new-recipe-ingredients'].forEach(id => document.getElementById(id).value = '');
       renderRecipes();
     });
 
