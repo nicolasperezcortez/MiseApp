@@ -100,6 +100,8 @@
     .list-item { display:grid; gap:.55rem; padding:var(--space-4); border-radius:18px; background:var(--color-surface-2); border:1px solid rgba(255,255,255,.06); }
     .list-head { display:flex; justify-content:space-between; gap:var(--space-3); align-items:start; }
     .checklist-item { display:flex; gap:.75rem; align-items:start; }
+    .checklist-section-title { font-size:var(--text-xs); color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.08em; padding:var(--space-2) var(--space-1) 0; margin-top:var(--space-2); }
+    .checklist-section-title:first-child { margin-top:0; }
     .check { margin-top:.2rem; accent-color:var(--color-primary); width:18px; height:18px; }
     .input, .select, .textarea {
       width:100%; min-height:46px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:var(--color-surface-2); padding:.85rem .95rem;
@@ -646,47 +648,186 @@
       {name:'Dark ‘n’ Stormy', glass:'Highball', garnish:'Rodaja de lima', method:'Build', tags:['tropical'], ingredients:[['Ron oscuro',50],['Ginger beer',120],['Jugo de lima',10]]}
     ];
 
-    const checklistData = load('checklists', {
+    const defaultChecklists = {
       apertura: [
-        'Encender estación y revisar iluminación de barra',
-        'Reponer hielo de servicio y backup',
-        'Controlar mise de cítricos, menta y albahaca',
-        'Verificar speed rack completo',
-        'Pulir cristalería crítica',
-        'Chequear POS, comandera y efectivo de caja',
-        'Preparar garnish de apertura',
-        'Probar tónicas, sodas y ginger beer abiertas',
-        'Revisar stock de jarabes y pre-batches',
-        'Limpiar superficies y barra de apoyo'
+        '§§General',
+        'Ingresar a hora programada',
+        'Encender luces',
+        'Encender música ambiental (revisar volumen)',
+        'Encender climatización (aire acondicionado/calefacción)',
+        'Revisar baños de clientes',
+        'Revisar limpieza del salón',
+        'Revisar terraza (si aplica)',
+        'Revisar entradas y salidas de emergencia despejadas',
+        '§§Barra',
+        'Barra completamente limpia',
+        'Estaciones de trabajo ordenadas',
+        'Cristalería limpia',
+        'Cristalería suficiente',
+        'Herramientas completas',
+        'Tablas limpias',
+        'Cuchillos limpios',
+        'Speed rack completo',
+        'Garnish preparado',
+        'Hielo suficiente',
+        'Basureros vacíos',
+        '§§Producción',
+        'Syrups disponibles',
+        'Cordiales disponibles',
+        'Jugos preparados',
+        'Batch listos',
+        'Frutas cortadas',
+        'Decoraciones listas',
+        '§§Inventario',
+        'Botellas principales disponibles',
+        'Cervezas suficientes',
+        'Bebidas sin alcohol disponibles',
+        'Vinos disponibles',
+        'Insumos críticos revisados',
+        '§§Equipos',
+        'Máquina de hielo funcionando',
+        'Refrigeradores funcionando',
+        'Freezer funcionando',
+        'Lavavasos funcionando',
+        'Máquina de café funcionando',
+        'POS operativo',
+        'Internet funcionando',
+        '§§Higiene',
+        'Lavamanos operativo',
+        'Jabón disponible',
+        'Toallas de papel disponibles',
+        'Sanitizante disponible',
+        'Uniforme limpio',
+        'Delantal limpio',
+        '§§Caja',
+        'Fondo de caja correcto',
+        'POS conectado',
+        'Impresora funcionando',
+        'Rollos disponibles',
+        '§§Equipo',
+        'Equipo completo',
+        'Roles asignados',
+        'Reservas revisadas',
+        'Eventos del día revisados',
+        'Productos agotados informados',
+        'Promociones del día comunicadas'
       ],
       entremedio: [
-        'Reponer hielo de servicio y backup',
-        'Chequear stock de garnish y reponer si es necesario',
-        'Revisar mixers abiertos (tónica, soda, ginger beer)',
-        'Limpiar barra de trabajo y estación',
-        'Reponer cristalería limpia al speed',
-        'Chequear pre-batches y nivel de jarabes',
-        'Limpiar herramientas (shakers, bar spoon, jigger)',
-        'Actualizar nota de turno si hubo incidentes'
+        '§§General',
+        'Salón limpio y ordenado',
+        'Barra limpia',
+        'Mesas limpias',
+        'Piso limpio y seco',
+        'Baños limpios',
+        'Basureros bajo el 75% de capacidad',
+        '§§Barra',
+        'Hielo suficiente',
+        'Garnish suficiente',
+        'Jugos suficientes',
+        'Syrups suficientes',
+        'Batch suficientes',
+        'Cristalería limpia disponible',
+        'Herramientas completas',
+        '§§Stock crítico',
+        'Destilados principales suficientes',
+        'Cervezas suficientes',
+        'Vinos suficientes',
+        'Bebidas sin alcohol suficientes',
+        'Insumos críticos disponibles',
+        '§§Servicio',
+        'Equipo completo',
+        'Estaciones ordenadas',
+        'No hay acumulación de loza o cristalería',
+        'Comandas fluyendo normalmente',
+        'No hay reclamos pendientes',
+        '§§Equipos',
+        'Máquina de hielo funcionando',
+        'Refrigeradores funcionando',
+        'Lavavasos funcionando',
+        'POS operativo',
+        '§§Incidencias',
+        'Roturas registradas',
+        'Productos agotados registrados',
+        'Fallas de equipos registradas',
+        'Observaciones registradas'
       ],
       cierre: [
-        'Contar y registrar stock crítico',
-        'Limpiar y sanitizar cristalería completa',
-        'Cerrar botellas y retirar del speed rack',
-        'Sanitizar herramientas de barra',
-        'Limpiar superficies, fregadero y piso de barra',
-        'Sacar residuos y reemplazar bolsa',
-        'Guardar garnish sobrante o desechar según protocolo',
-        'Dejar nota de turno para el siguiente bartender',
-        'Apagar equipos no esenciales',
-        'Verificar que POS y comandera estén cerradas'
+        '§§Barra',
+        'Botellas guardadas y ordenadas',
+        'Speed rack limpio y completo',
+        'Herramientas lavadas y guardadas',
+        'Cristalería lavada y almacenada',
+        'Barra completamente limpia',
+        'Estaciones ordenadas',
+        'Tablas y cuchillos limpios',
+        'Máquinas apagadas (si corresponde)',
+        '§§Producción',
+        'Garnish descartado o almacenado correctamente',
+        'Jugos almacenados o descartados según protocolo',
+        'Syrups almacenados correctamente',
+        'Batch almacenados correctamente',
+        'Producciones etiquetadas (fecha y responsable)',
+        'Producciones para el día siguiente registradas',
+        '§§Inventario',
+        'Productos críticos revisados',
+        'Quiebres de stock registrados',
+        'Mermas registradas',
+        'Roturas registradas',
+        'Productos próximos a vencer identificados',
+        '§§Limpieza',
+        'Barra sanitizada',
+        'Equipos limpiados',
+        'Refrigeradores limpios (si aplica)',
+        'Máquina de hielo limpiada (si corresponde)',
+        'Pisos lavados',
+        'Basureros vaciados',
+        'Bolsas de basura reemplazadas',
+        'Baños revisados',
+        '§§Equipos',
+        'Refrigeradores verificados',
+        'Freezer verificado',
+        'Lavavasos apagado o preparado',
+        'Máquina de café limpiada',
+        'Luces apagadas (excepto las necesarias)',
+        'Música apagada',
+        'Aire acondicionado o calefacción apagado',
+        '§§Caja',
+        'Cierre de caja realizado',
+        'Fondo de caja preparado',
+        'POS cerrado',
+        'Comprobantes archivados',
+        '§§Seguridad',
+        'Puertas cerradas',
+        'Ventanas cerradas',
+        'Alarma activada',
+        'Llaves guardadas',
+        'Equipos eléctricos revisados',
+        '§§Registro del turno',
+        'Incidentes registrados',
+        'Reclamos registrados',
+        'Productos agotados registrados',
+        'Observaciones para el siguiente turno',
+        'Responsable del cierre registrado'
       ]
-    });
+    };
+    const checklistData = load('checklists', defaultChecklists);
     ['apertura','entremedio','cierre'].forEach(k => { if (!Array.isArray(checklistData[k])) checklistData[k] = []; });
     let currentChecklist = 'apertura';
     const checklistState = load('checklist-state', { apertura: [], entremedio: [], cierre: [] });
     ['apertura','entremedio','cierre'].forEach(k => { if (!Array.isArray(checklistState[k])) checklistState[k] = []; });
     const customChecklists = load('custom-checklists', []);
+    const CHECKLIST_TEMPLATE_VERSION = 2;
+    if (load('checklist-template-version', 0) < CHECKLIST_TEMPLATE_VERSION) {
+      checklistData.apertura = defaultChecklists.apertura.slice();
+      checklistData.entremedio = defaultChecklists.entremedio.slice();
+      checklistData.cierre = defaultChecklists.cierre.slice();
+      checklistState.apertura = [];
+      checklistState.entremedio = [];
+      checklistState.cierre = [];
+      save('checklists', checklistData);
+      save('checklist-state', checklistState);
+      save('checklist-template-version', CHECKLIST_TEMPLATE_VERSION);
+    }
     function getChecklistItems(key) {
       if (key.startsWith('custom:')) { const cl = customChecklists.find(c => c.id === key.slice(7)); return cl ? cl.items : []; }
       return checklistData[key];
@@ -750,12 +891,15 @@
       const state = getChecklistState(currentChecklist);
       const wrap = document.getElementById('checklist-list');
       if (!items.length) { wrap.innerHTML = '<div class="empty-state">Sin tareas en esta checklist todavía.</div>'; return; }
-      wrap.innerHTML = items.map((item, idx) => `
+      wrap.innerHTML = items.map((item, idx) => {
+        if (item.startsWith('§§')) return `<div class="checklist-section-title">${item.slice(2)}</div>`;
+        return `
         <label class="checklist-item list-item">
           <input class="check" type="checkbox" data-idx="${idx}" ${state[idx] ? 'checked' : ''} />
           <span>${item}</span>
           <button class="icon-btn" type="button" data-remove-check="${idx}" aria-label="Eliminar tarea" style="margin-left:auto; width:36px; height:36px;"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>
-        </label>`).join('');
+        </label>`;
+      }).join('');
       if (window.lucide) lucide.createIcons();
       wrap.querySelectorAll('.check').forEach(cb => {
         cb.addEventListener('change', () => {
@@ -775,7 +919,7 @@
     }
     function renderChecklistTabs() {
       const wrap = document.getElementById('checklist-tabs');
-      const fixed = [['apertura','Apertura'],['entremedio','Entremedio'],['cierre','Cierre']];
+      const fixed = [['apertura','Apertura'],['entremedio','Operación'],['cierre','Cierre']];
       wrap.innerHTML = fixed.map(([key,label]) => `<button class="pill ${currentChecklist===key?'is-on':''}" data-list="${key}">${label}</button>`).join('')
         + customChecklists.map(c => `<button class="pill ${currentChecklist==='custom:'+c.id?'is-on':''}" data-list="custom:${c.id}">${c.name}<span data-remove-checklist="${c.id}" aria-label="Eliminar checklist" style="display:inline-flex; margin-left:.35rem;"><i data-lucide="x" style="width:12px;height:12px"></i></span></button>`).join('');
       if (window.lucide) lucide.createIcons();
