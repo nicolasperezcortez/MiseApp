@@ -102,6 +102,12 @@
     .checklist-item { display:flex; gap:.75rem; align-items:start; }
     .checklist-section-title { font-size:var(--text-xs); color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.08em; padding:var(--space-2) var(--space-1) 0; margin-top:var(--space-2); }
     .checklist-section-title:first-child { margin-top:0; }
+    .recipe-row { width:100%; display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); text-align:left; }
+    .steps-list { display:grid; gap:.55rem; padding-left:1.2rem; font-size:var(--text-sm); }
+    .steps-list li::marker { color:var(--color-primary); font-weight:700; }
+    .recipe-modal-backdrop { position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.6); display:flex; align-items:flex-end; justify-content:center; }
+    .recipe-modal-backdrop[hidden] { display:none; }
+    .recipe-modal { width:100%; max-width:460px; max-height:88vh; overflow-y:auto; border-radius:24px 24px 0 0; }
     .check { margin-top:.2rem; accent-color:var(--color-primary); width:18px; height:18px; }
     .input, .select, .textarea {
       width:100%; min-height:46px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:var(--color-surface-2); padding:.85rem .95rem;
@@ -109,7 +115,6 @@
     .textarea { min-height:94px; resize:vertical; }
     .field { display:grid; gap:.45rem; }
     .field label { font-size:var(--text-xs); color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.08em; }
-    .recipe-card { display:grid; gap:var(--space-3); }
     .recipe-meta { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2); }
     .meta-box { padding:.85rem; border-radius:16px; background:var(--color-surface-2); border:1px solid rgba(255,255,255,.06); }
     .meta-box span { display:block; font-size:var(--text-xs); color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.08em; }
@@ -239,7 +244,7 @@
         <p>Mise App reúne checklists, SOP, inventario, proveedores, pedidos, costos, ABV y un recetario profesional en una sola interfaz pensada para uso nocturno desde el celular.</p>
       </div>
       <div class="hero-stats">
-        <div class="stat"><strong>30</strong><span>Cócteles base</span></div>
+        <div class="stat"><strong id="stat-recipes-count">—</strong><span>Cócteles base</span></div>
         <div class="stat"><strong>8</strong><span>Módulos clave</span></div>
         <div class="stat"><strong>Mobile</strong><span>Uso nocturno</span></div>
       </div>
@@ -398,6 +403,7 @@
             <div class="field"><label>Tiempo</label><input id="new-recipe-time" class="input" placeholder="Ej.: 2 min" /></div>
             <div class="field" style="grid-column:1/-1;"><label>Historia</label><textarea id="new-recipe-history" class="textarea" placeholder="Breve reseña del cóctel"></textarea></div>
             <div class="field" style="grid-column:1/-1;"><label>Ingredientes</label><textarea id="new-recipe-ingredients" class="textarea" placeholder="Gin, 45&#10;Jugo de limón, 20&#10;Jarabe simple, 15"></textarea></div>
+            <div class="field" style="grid-column:1/-1;"><label>Pasos de elaboración</label><textarea id="new-recipe-steps" class="textarea" placeholder="Uno por línea. Si se deja vacío, se generan automáticamente según el método."></textarea></div>
           </div>
           <button class="btn btn-primary" id="add-recipe" style="margin-top:1rem;">Guardar cóctel</button>
         </article>
@@ -496,6 +502,10 @@
     <footer class="footer-note">
       Demo de Mise App para validación de producto. Cada bar tiene su propia cuenta y sus datos se guardan en la nube (Supabase). El módulo de proveedores está preparado para que cada bar agregue sus propios contactos. Suscripciones pagas pueden conectarse con Stripe más adelante.
     </footer>
+
+    <div class="recipe-modal-backdrop" id="recipe-modal-backdrop" hidden>
+      <article class="card recipe-modal" id="recipe-modal"></article>
+    </div>
   </div>
 
   <script>
@@ -633,6 +643,7 @@
       {name:'Hanky Panky', glass:'Copa Coupé', garnish:'Twist de naranja', method:'Refrescado', history:'Creado por Ada Coleman en el Savoy Hotel de Londres para el actor Sir Charles Hawtrey.', difficulty:3, abv:27, time:'2 min', family:'Martini', ingredients:[['Gin',45],['Vermouth Rosso',45],['Fernet Branca',7.5]]},
       {name:'Whiskey Sour', glass:'Vaso Old Fashioned', garnish:'Media rodaja de naranja y cereza', method:'Batido', history:'Clásico estadounidense del siglo XIX.', difficulty:2, abv:18, time:'2 min', family:'Sour', ingredients:[['Bourbon',60],['Jugo de limón',30],['Syrup simple',22.5],['Clara de huevo','opcional']]},
       {name:'Daiquiri', glass:'Copa Coupé', garnish:'Twist de lima', method:'Batido', history:'Creado en Cuba a finales del siglo XIX.', difficulty:2, abv:20, time:'2 min', family:'Sour', ingredients:[['Ron Blanco',60],['Jugo de lima',22.5],['Syrup simple',22.5]]},
+      {name:'Gimlet', glass:'Copa Coupé', garnish:'Twist de lima', method:'Batido', history:'Creado por la Marina Real Británica, que mezclaba ginebra con cordial de lima para prevenir el escorbuto en altamar.', difficulty:2, abv:26, time:'2 min', family:'Sour', ingredients:[['Gin',60],['Jugo de lima',22.5],['Syrup simple',22.5]]},
       {name:'Margarita', glass:'Copa Margarita / Coupé', garnish:'Borde de sal y rueda de lima', method:'Batido', history:'Uno de los cócteles mexicanos más famosos del mundo.', difficulty:2, abv:21, time:'2 min', family:'Sour', ingredients:[['Tequila Blanco',60],['Triple Sec',22.5],['Jugo de lima',30]]},
       {name:'Sidecar', glass:'Copa Coupé', garnish:'Twist de naranja', method:'Batido', history:'Popularizado en París y Londres tras la Primera Guerra Mundial.', difficulty:3, abv:24, time:'2 min', family:'Sour', ingredients:[['Cognac',50],['Triple Sec',20],['Jugo de limón',20]]},
       {name:'White Lady', glass:'Copa Coupé', garnish:'Twist de limón', method:'Batido', history:'Creado por Harry MacElhone en los años 20.', difficulty:3, abv:23, time:'2 min', family:'Sour', ingredients:[['Gin',40],['Triple Sec',30],['Jugo de limón',20]]},
@@ -645,6 +656,7 @@
       {name:'Gin Fizz', glass:'Vaso Highball', garnish:'Rodaja de limón', method:'Batido / Completar', history:'Variante del Sour creada en Nueva Orleans.', difficulty:3, abv:11, time:'2 min', family:'Fizz', ingredients:[['Gin',45],['Jugo de limón',30],['Syrup simple',15],['Soda','completar']]},
       {name:'Paloma', glass:'Vaso Highball', garnish:'Gajo de pomelo', method:'Directo', history:'Uno de los tragos más populares de México.', difficulty:1, abv:9, time:'1 min', family:'Highball', ingredients:[['Tequila Blanco',60],['Jugo de lima',15],['Soda de pomelo',100]]},
       {name:'Moscow Mule', glass:'Mug de cobre', garnish:'Gajo de lima', method:'Directo', history:'Creado en Estados Unidos en los años 40 para impulsar el vodka.', difficulty:1, abv:11, time:'1 min', family:'Mule', ingredients:[['Vodka',60],['Jugo de lima',15],['Ginger Beer',120]]},
+      {name:'Gin Tonic', glass:'Copa balón', garnish:'Lima o botánicos', method:'Directo', history:'Nació en la India colonial británica del siglo XIX, cuando se mezclaba ginebra con agua tónica con quinina para prevenir la malaria.', difficulty:1, abv:8, time:'1 min', family:'Highball', ingredients:[['Gin',50],['Agua tónica',150]]},
       {name:"Dark 'n' Stormy", glass:'Vaso Highball', garnish:'Gajo de lima', method:'Directo', history:'Originario de Bermudas con ron Gosling\'s.', difficulty:1, abv:12, time:'1 min', family:'Highball', ingredients:[['Ron Oscuro',60],['Ginger Beer',120],['Jugo de lima',15]]},
       {name:"Horse's Neck", glass:'Vaso Highball', garnish:'Twist largo de limón', method:'Directo', history:'Nació como trago sin alcohol a finales del siglo XIX; luego se popularizó con brandy o bourbon.', difficulty:1, abv:10, time:'1 min', family:'Highball', ingredients:[['Bourbon o Brandy',60],['Ginger Ale',120],['Angostura Bitters','2 dashes']]},
       {name:'Cuba Libre', glass:'Vaso Highball', garnish:'Gajo de lima', method:'Directo', history:'Creado en Cuba tras la Guerra Hispano-Estadounidense.', difficulty:1, abv:11, time:'1 min', family:'Highball', ingredients:[['Ron Blanco',60],['Jugo de lima',15],['Cola',120]]},
@@ -1175,46 +1187,123 @@
       const filled = Math.max(0, Math.min(5, Number(n) || 0));
       return '★'.repeat(filled) + '☆'.repeat(5 - filled);
     }
+    function stepsFor(r) {
+      if (Array.isArray(r.steps) && r.steps.length) return r.steps;
+      const m = (r.method || '').toLowerCase();
+      const garnish = (r.garnish || '').toLowerCase();
+      const last = r.ingredients[r.ingredients.length - 1];
+      const topper = r.ingredients.length > 1 && /soda|cola|champagne|prosecco|ginger ale|ginger beer|lemon-lime soda|tónica|espumante/i.test(last[0]) ? last : null;
+      const base = topper ? r.ingredients.filter(i => i !== topper) : r.ingredients;
+      const baseNames = base.map(([name]) => name).join(', ');
+      const hasEgg = r.ingredients.some(([name]) => /clara de huevo/i.test(name));
+      const steps = [];
+      if (m.includes('machacado')) {
+        const muddleRe = /menta|lima|azúcar|albahaca|fruta/i;
+        const muddle = base.filter(([n]) => muddleRe.test(n));
+        const rest = muddle.length ? base.filter(([n]) => !muddleRe.test(n)) : base.slice(1);
+        const muddleList = (muddle.length ? muddle : [base[0]]).map(([n]) => n).join(' y ');
+        steps.push(`Machacar suavemente ${muddleList.toLowerCase()} en el fondo del ${r.glass.toLowerCase()}.`);
+        steps.push(`Agregar hielo y ${rest.length ? rest.map(([n]) => n).join(', ') : 'el resto de los ingredientes'}.`);
+        steps.push('Mezclar con bar spoon hasta enfriar bien.');
+      } else if (m.includes('licuadora')) {
+        steps.push(`Agregar en la licuadora con hielo: ${baseNames}.`);
+        steps.push('Licuar hasta lograr una textura homogénea y espesa.');
+        steps.push(`Servir de inmediato en ${r.glass.toLowerCase()}.`);
+      } else if (m.includes('swizzle')) {
+        steps.push(`Llenar ${r.glass.toLowerCase()} con hielo frappé.`);
+        steps.push(`Agregar: ${baseNames}.`);
+        steps.push('Swizzlear con bar spoon o swizzle stick hasta escarchar el vaso por fuera.');
+        steps.push('Coronar con más hielo.');
+      } else if (m.includes('refrescado')) {
+        steps.push(`Agregar en el vaso mezclador con hielo: ${baseNames}${m.includes('enjuague') ? ' (enjuagar antes la copa con la absenta y descartar el resto)' : ''}.`);
+        steps.push('Remover (stir) 20-30 segundos hasta enfriar y diluir correctamente.');
+        steps.push(`Colar hacia ${r.glass.toLowerCase()} bien fría.`);
+      } else if (m.includes('batido')) {
+        if (hasEgg) {
+          steps.push('Dry shake (sin hielo) todos los ingredientes 10 segundos para emulsionar la clara de huevo.');
+          steps.push(`Agregar hielo y volver a shakear: ${baseNames}.`);
+        } else {
+          steps.push(`Agregar en la coctelera con hielo: ${baseNames}.`);
+        }
+        steps.push(`Shake enérgico 10-12 segundos${m.includes('largo') ? ' (shake largo, unos 20 segundos)' : ''}.`);
+        steps.push(`Colar${hasEgg ? ' doble' : ''} hacia ${r.glass.toLowerCase()}.`);
+        if (topper) steps.push(`Completar con ${topper[0].toLowerCase()} y mezclar suavemente.`);
+      } else {
+        steps.push(`Llenar ${r.glass.toLowerCase()} con hielo.`);
+        steps.push(`Agregar en orden: ${baseNames}.`);
+        if (topper) steps.push(`Completar con ${topper[0].toLowerCase()}.`);
+        steps.push('Mezclar suavemente con bar spoon.');
+      }
+      if (/^sin /i.test(r.garnish || '')) steps.push('Servir sin garnish.');
+      else steps.push(`Decorar con ${garnish || 'el garnish correspondiente'} y servir.`);
+      return steps;
+    }
+    let recipeListCache = [];
     function renderRecipes() {
       const q = document.getElementById('recipe-search').value.toLowerCase().trim();
-      const unit = document.getElementById('unit-select').value;
       const all = [...recipes.map(r => ({...r, custom:false, idx:-1})), ...customRecipes.map((r, i) => ({...r, custom:true, idx:i}))];
       const visible = all.filter(r => r.name.toLowerCase().includes(q));
-      document.getElementById('recipe-list').innerHTML = visible.map(r => {
-        const idx = r.idx;
-        return `
-        <article class="card recipe-card">
-          <div class="list-head">
-            <div>
-              <h4>${r.name}</h4>
-              <div class="pill-row" style="margin-top:.45rem">${r.custom ? '<span class="pill is-on">propio</span>' : ''}${r.family ? `<span class="pill">${r.family}</span>` : ''}</div>
-            </div>
-            ${r.custom ? `<button class="icon-btn" type="button" data-remove-recipe="${idx}" aria-label="Eliminar cóctel" style="width:36px; height:36px;"><i data-lucide="trash-2" style="width:16px;height:16px"></i></button>` : ''}
-          </div>
-          ${r.history ? `<p class="muted small">${r.history}</p>` : ''}
-          <div class="recipe-meta">
-            <div class="meta-box"><span>Cristalería</span><strong>${r.glass}</strong></div>
-            <div class="meta-box"><span>Garnish</span><strong>${r.garnish}</strong></div>
-            <div class="meta-box" style="grid-column:1/-1"><span>Método</span><strong>${r.method}</strong></div>
-            <div class="meta-box"><span>Dificultad</span><strong>${starsFor(r.difficulty)}</strong></div>
-            <div class="meta-box"><span>ABV aprox.</span><strong>${r.abv != null ? r.abv + '%' : '—'}</strong></div>
-            <div class="meta-box"><span>Tiempo</span><strong>${r.time || '—'}</strong></div>
-          </div>
+      recipeListCache = visible;
+      document.getElementById('recipe-list').innerHTML = visible.map((r, i) => `
+        <button class="list-item recipe-row" type="button" data-open-recipe="${i}">
           <div>
-            <p class="faint small" style="margin-bottom:.7rem">Ingredientes</p>
-            <div class="ingredients">${r.ingredients.map(([name, ml]) => `<div class="ingredient"><span>${name}</span><strong>${formatAmount(ml, unit)}</strong></div>`).join('')}</div>
+            <h4>${r.name}</h4>
+            <p class="faint small" style="margin-top:.2rem">${[r.family, r.abv != null ? r.abv + '% ABV' : null].filter(Boolean).join(' · ')}</p>
           </div>
-        </article>`;
-      }).join('');
+          <div style="display:flex; align-items:center; gap:.5rem;">
+            ${r.custom ? '<span class="pill is-on">propio</span>' : ''}
+            <i data-lucide="chevron-right" style="width:18px;height:18px; opacity:.5;"></i>
+          </div>
+        </button>`).join('') || '<div class="empty-state">No se encontraron cócteles.</div>';
       if (window.lucide) lucide.createIcons();
-      document.querySelectorAll('[data-remove-recipe]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          customRecipes.splice(Number(btn.dataset.removeRecipe), 1);
-          save('custom-recipes', customRecipes);
-          renderRecipes();
-        });
+      document.querySelectorAll('[data-open-recipe]').forEach(btn => {
+        btn.addEventListener('click', () => openRecipeDetail(recipeListCache[Number(btn.dataset.openRecipe)]));
       });
     }
+    function openRecipeDetail(r) {
+      const unit = document.getElementById('unit-select').value;
+      document.getElementById('recipe-modal').innerHTML = `
+        <div class="list-head">
+          <div>
+            <h3>${r.name}</h3>
+            <div class="pill-row" style="margin-top:.45rem">${r.custom ? '<span class="pill is-on">propio</span>' : ''}${r.family ? `<span class="pill">${r.family}</span>` : ''}</div>
+          </div>
+          <button class="icon-btn" type="button" id="close-recipe-detail" aria-label="Cerrar" style="width:36px; height:36px;"><i data-lucide="x"></i></button>
+        </div>
+        ${r.history ? `<p class="muted small" style="margin-top:.75rem">${r.history}</p>` : ''}
+        <div class="recipe-meta" style="margin-top:1rem;">
+          <div class="meta-box"><span>Cristalería</span><strong>${r.glass}</strong></div>
+          <div class="meta-box"><span>Garnish</span><strong>${r.garnish}</strong></div>
+          <div class="meta-box" style="grid-column:1/-1"><span>Método</span><strong>${r.method}</strong></div>
+          <div class="meta-box"><span>Dificultad</span><strong>${starsFor(r.difficulty)}</strong></div>
+          <div class="meta-box"><span>ABV aprox.</span><strong>${r.abv != null ? r.abv + '%' : '—'}</strong></div>
+          <div class="meta-box"><span>Tiempo</span><strong>${r.time || '—'}</strong></div>
+        </div>
+        <div style="margin-top:1rem;">
+          <p class="faint small" style="margin-bottom:.7rem">Ingredientes</p>
+          <div class="ingredients">${r.ingredients.map(([name, ml]) => `<div class="ingredient"><span>${name}</span><strong>${formatAmount(ml, unit)}</strong></div>`).join('')}</div>
+        </div>
+        <div style="margin-top:1rem;">
+          <p class="faint small" style="margin-bottom:.7rem">Elaboración paso a paso</p>
+          <ol class="steps-list">${stepsFor(r).map(s => `<li>${s}</li>`).join('')}</ol>
+        </div>
+        ${r.custom ? `<button class="btn btn-secondary" type="button" id="delete-recipe-detail" data-remove-recipe="${r.idx}" style="margin-top:1.25rem; width:100%; display:flex; align-items:center; justify-content:center; gap:.5rem;"><i data-lucide="trash-2" style="width:16px;height:16px"></i> Eliminar cóctel</button>` : ''}
+      `;
+      document.getElementById('recipe-modal-backdrop').hidden = false;
+      if (window.lucide) lucide.createIcons();
+      document.getElementById('close-recipe-detail').addEventListener('click', closeRecipeDetail);
+      const deleteBtn = document.getElementById('delete-recipe-detail');
+      if (deleteBtn) deleteBtn.addEventListener('click', () => {
+        customRecipes.splice(Number(deleteBtn.dataset.removeRecipe), 1);
+        save('custom-recipes', customRecipes);
+        closeRecipeDetail();
+        renderRecipes();
+      });
+    }
+    function closeRecipeDetail() { document.getElementById('recipe-modal-backdrop').hidden = true; }
+    document.getElementById('recipe-modal-backdrop').addEventListener('click', (e) => {
+      if (e.target.id === 'recipe-modal-backdrop') closeRecipeDetail();
+    });
     document.getElementById('recipe-search').addEventListener('input', renderRecipes);
     document.getElementById('unit-select').value = load('unit', 'ml');
     document.getElementById('default-unit-select').value = load('unit', 'ml');
@@ -1252,15 +1341,17 @@
       const time = document.getElementById('new-recipe-time').value.trim();
       const history = document.getElementById('new-recipe-history').value.trim();
       const ingredientsRaw = document.getElementById('new-recipe-ingredients').value;
+      const stepsRaw = document.getElementById('new-recipe-steps').value;
       if (!name) return;
       const ingredients = ingredientsRaw.split('\n').map(line => {
         const parts = line.split(',');
         const ml = Number(parts[1]);
         return parts[0] && parts[0].trim() && !isNaN(ml) ? [parts[0].trim(), ml] : null;
       }).filter(Boolean);
-      customRecipes.push({name, glass, garnish, method, family, difficulty, abv, time, history, ingredients});
+      const steps = stepsRaw.split('\n').map(s => s.trim()).filter(Boolean);
+      customRecipes.push({name, glass, garnish, method, family, difficulty, abv, time, history, ingredients, steps});
       save('custom-recipes', customRecipes);
-      ['new-recipe-name','new-recipe-glass','new-recipe-garnish','new-recipe-family','new-recipe-abv','new-recipe-time','new-recipe-history','new-recipe-ingredients'].forEach(id => document.getElementById(id).value = '');
+      ['new-recipe-name','new-recipe-glass','new-recipe-garnish','new-recipe-family','new-recipe-abv','new-recipe-time','new-recipe-history','new-recipe-ingredients','new-recipe-steps'].forEach(id => document.getElementById(id).value = '');
       renderRecipes();
     });
 
@@ -1445,6 +1536,7 @@
       e.target.value = '';
     });
 
+    document.getElementById('stat-recipes-count').textContent = recipes.length;
     renderChecklistTabs();
     renderChecklist();
     renderSops();
